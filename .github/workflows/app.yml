@@ -69,6 +69,7 @@ jobs:
 
           sudo rm -f /etc/nginx/sites-enabled/default
 
+          # Use escaped variables for \$uri and \$uri/ to ensure they are not expanded by the shell
           echo "server {
               listen 80;
               server_name $EC2_IP;
@@ -76,7 +77,7 @@ jobs:
               location / {
                   root /var/www/react-app/build;
                   index index.html;
-                  try_files $uri $uri/ /index.html;
+                  try_files \$uri \$uri/ /index.html;
               }
           }" | sudo tee /etc/nginx/sites-available/react-app
 
