@@ -13,18 +13,30 @@
         h1 {
             color: #333;
         }
+        .options {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <h1>Interactive Web Page</h1>
 
+    <div class="options">
+        <button id="yesButton">Yes</button>
+        <button id="noButton">No</button>
+    </div>
+
     <script>
-        // Prompt the user for their name
-        const profileName = prompt("Please enter your Chrome profile name:");
-
-        if (profileName) {
-            const response1 = confirm(`Hello, ${profileName}! Did you complete the Jenkins declarative pipeline lab?`);
-
+        // Function to handle the "Yes" button click
+        document.getElementById("yesButton").addEventListener("click", function () {
+            const response1 = confirm("Did you complete the Jenkins declarative pipeline lab?");
+            
             if (response1) {
                 const response2 = confirm("Great! Did you complete the GitHub Action code as well?");
                 
@@ -36,9 +48,12 @@
             } else {
                 alert("Please complete the Jenkins pipeline lab and upload the picture to Slack.");
             }
-        } else {
-            alert("No name entered. Please refresh the page and try again.");
-        }
+        });
+
+        // Function to handle the "No" button click
+        document.getElementById("noButton").addEventListener("click", function () {
+            alert("Please complete the Jenkins pipeline lab and upload the picture to Slack.");
+        });
     </script>
 </body>
 </html>
