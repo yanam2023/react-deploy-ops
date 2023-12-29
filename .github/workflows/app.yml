@@ -77,7 +77,7 @@ jobs:
               location / {
                   root /var/www/react-app/build;
                   index index.html;
-                  try_files \$uri \$uri/ /index.html;
+                  try_files $uri $uri/ /index.html;
               }
           }" | sudo tee /etc/nginx/sites-available/react-app
 
