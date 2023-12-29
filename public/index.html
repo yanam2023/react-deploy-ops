@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rajinikanth DevOps Workspace</title>
+    <title>Interactive Web Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,17 +16,28 @@
     </style>
 </head>
 <body>
-    <h1>Rajinikanth DevOps Workspace</h1>
-    <div id="profileName"></div>
-    
+    <h1>Interactive Web Page</h1>
+
     <script>
         // Prompt the user for their name
         const profileName = prompt("Please enter your Chrome profile name:");
 
-        // Display the entered name on the webpage
         if (profileName) {
-            const profileNameDiv = document.getElementById("profileName");
-            profileNameDiv.textContent = `Welcome, ${profileName}!`;
+            const response1 = confirm(`Hello, ${profileName}! Did you complete the Jenkins declarative pipeline lab?`);
+
+            if (response1) {
+                const response2 = confirm("Great! Did you complete the GitHub Action code as well?");
+                
+                if (response2) {
+                    alert("Awesome! You're all set!");
+                } else {
+                    alert("Please complete the GitHub Action code by EOD.");
+                }
+            } else {
+                alert("Please complete the Jenkins pipeline lab and upload the picture to Slack.");
+            }
+        } else {
+            alert("No name entered. Please refresh the page and try again.");
         }
     </script>
 </body>
