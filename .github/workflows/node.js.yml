@@ -1,28 +1,79 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: Node.js CI
+name: Node.js CI/CD
 
 on:
   push:
     branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
-  build:
-
-    runs-on: self-hosted
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [14.x, 16.x, 18.x]
 
     steps:
     - uses: actions/checkout@v3
+    
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    
     - run: npm ci
     - run: npm run build --if-present
+    - run: npm test
+
+    # Build the React app
+    - name: Build React App
+      run: npm run build
+
+    # Transfer the build directory to your EC2 instance
+    - name: Deploy to EC2
+      env:
+        EC2_IP: ${{ secrets.EC2_IP }}
+        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      run: |
+        echo "$PRIVATE_KEY" > private_key.pem
+        chmod 600 private_key.pem
+        scp -o StrictHostKeyChecking=no -i private_key.pem -r ./build ubuntu@$EC2_IP:/var/www/react-app
+
+    # Install and configure Nginx to serve your app
+    - name: Install and Configure Nginx
+      env:
+        EC2_IP: ${{ secrets.EC2_IP }}
+        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      run: |
+        ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$EC2_IP <<-EOF
+          sudo apt update
+          sudo apt install nginx -y
+          sudo systemctl start nginx
+          sudo systemctl enable nginx
+          # Remove the default Nginx configuration
+          sudo rm /etc/nginx/sites-enabled/default
+          # Add your custom configuration
+          echo "server {
+              listen 80;
+              server_name $EC2_IP;
+
+              location / {
+                  root /var/www/react-app;
+                  index index.html index.htm;
+                  try_files \$uri /index.html;
+              }
+          }" | sudo tee /etc/nginx/sites-available/react-app
+          sudo ln -s /etc/nginx/sites-available/react-app /etc/nginx/sites-enabled/react-app
+          sudo nginx -t
+          sudo systemctl restart nginx
+        EOF
+
+    # Check the deployment status
+    - name: Check Deployment
+      env:
+        EC2_IP: ${{ secrets.EC2_IP }}
+      run: |
+        echo "Visit http://$EC2_IP to see your deployed React application."
+
