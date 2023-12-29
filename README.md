@@ -1,3 +1,77 @@
+### Nodejs Install and Config 
+
+curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+
+sudo apt-get install -y nodejs
+
+node -v
+npm -v
+
+add runner from git-hub 
+
+## Permissions 
+
+chmod +x config.sh
+
+sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner
+
+
+##check logs 
+
+cat /var/log/nginx/error.log
+
+### if not works 
+
+sudo nano /etc/nginx/sites-enabled/react-app
+
+## update below in file 
+
+try_files $uri $uri/ /index.html;
+
+# and run below commads 
+
+sudo nginx -t
+
+sudo systemctl restart nginx
+
+sudo systemctl status nginx
+
+##File Permissions:
+
+ls -l /var/www/react-app
+
+sudo chown -R www-data:www-data /var/www/react-app
+
+sudo chmod -R 755 /var/www/react-app
+
+
+sudo ufw status
+
+sudo ufw allow http
+sudo ufw reload
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Getting Started with Create React App.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
