@@ -3,10 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome Page</title>
+    <title>Rajinikanth DevOps Workspace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Our Website</h1>
-    <p>Thank you for visiting our website. We're glad to have you here!</p>
+    <h1>Rajinikanth DevOps Workspace</h1>
+    <div id="profileName"></div>
+    
+    <script>
+        // Prompt the user for their name
+        const profileName = prompt("Please enter your Chrome profile name:");
+
+        // Display the entered name on the webpage
+        if (profileName) {
+            const profileNameDiv = document.getElementById("profileName");
+            profileNameDiv.textContent = `Welcome, ${profileName}!`;
+        }
+    </script>
 </body>
 </html>
