@@ -32,28 +32,36 @@ jobs:
     - name: Build React App
       run: npm run build
 
-    - name: Deploy to EC2
+    - name: Set Up SSH Key
       env:
-        EC2_IP: ${{ secrets.EC2_IP }}
         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       run: |
         echo "$PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
+
+    - name: Adjust Permissions on EC2
+      env:
+        EC2_IP: ${{ secrets.EC2_IP }}
+      run: |
+        ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$EC2_IP "sudo chown -R ubuntu:ubuntu /var/www/react-app"
+
+    - name: Deploy to EC2
+      env:
+        EC2_IP: ${{ secrets.EC2_IP }}
+      run: |
         scp -o StrictHostKeyChecking=no -i private_key.pem -r ./build ubuntu@$EC2_IP:/var/www/react-app
+
+    - name: Reset Permissions on EC2
+      env:
+        EC2_IP: ${{ secrets.EC2_IP }}
+      run: |
+        ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$EC2_IP "sudo chown -R www-data:www-data /var/www/react-app/build"
 
     - name: Install and Configure Nginx
       env:
         EC2_IP: ${{ secrets.EC2_IP }}
-        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       run: |
-        echo "$PRIVATE_KEY" > private_key.pem
-        chmod 600 private_key.pem
         ssh -o StrictHostKeyChecking=no -T -i private_key.pem ubuntu@$EC2_IP <<-EOF
-          while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
-              echo "Waiting for other software managers to finish..."
-              sleep 10
-          done
-
           sudo apt update
           sudo apt install -y nginx
           sudo systemctl start nginx
@@ -68,7 +76,7 @@ jobs:
               location / {
                   root /var/www/react-app/build;
                   index index.html;
-                  try_files $uri $uri/ /index.html
+                  try_files \$uri \$uri/ /index.html;
               }
           }" | sudo tee /etc/nginx/sites-available/react-app
 
