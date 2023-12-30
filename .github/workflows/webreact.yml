@@ -43,6 +43,8 @@ jobs:
       env:
         EC2_IP: ${{ secrets.EC2_IP }}
       run: |
+        eval $(ssh-agent -s)
+        ssh-add private_key.pem
         ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$EC2_IP "sudo chown -R ubuntu:ubuntu /var/www/react-app"
 
     - name: Deploy to EC2
