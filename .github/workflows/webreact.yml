@@ -44,6 +44,7 @@ jobs:
         EC2_IP: ${{ secrets.EC2_IP }}
       run: |
         eval $(ssh-agent -s)
+        chmod 600 private_key.pem 
         ssh-add private_key.pem
         ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$EC2_IP "sudo chown -R ubuntu:ubuntu /var/www/react-app"
 
