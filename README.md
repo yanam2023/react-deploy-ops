@@ -1,4 +1,4 @@
-### Nodejs Install and Config 
+### Nodejs Install and Config.
 
 curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 
